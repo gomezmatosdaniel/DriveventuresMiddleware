@@ -16,6 +16,10 @@ public class UsuarioServiceTest {
 		usuarioService = new UsuarioServiceImpl();
 	}
 	
+	public void testFindById() throws DataException {
+		usuarioService.findById(1);
+	}
+	
 	/**public void testCreate() throws DataException {
 		
 		Usuario u = new Usuario();
@@ -51,6 +55,7 @@ public class UsuarioServiceTest {
 		test.testLogin();
 		//test.testUpdate();
 		//test.testCreate();
+		test.testFindById();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

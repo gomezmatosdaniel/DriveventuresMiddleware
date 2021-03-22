@@ -3,6 +3,7 @@ package com.driveventures.service.Impl;
 import java.sql.Connection;
 
 
+
 import java.sql.SQLException;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,8 +13,6 @@ import com.driveventures.daos.UsuarioDAO;
 import com.driveventures.daos.impl.UsuarioDAOImpl;
 import com.driveventures.model.Usuario;
 import com.driveventures.service.UsuarioService;
-
-
 import DBCUtils.DBUtils;
 import DBCUtils.DataException;
 import DBCUtils.GetConnection;
@@ -131,6 +130,30 @@ public void update(Usuario u) throws DataException {
     } finally {
     	DBUtils.closeConnection(connection, commit);
     }
+	
+}
+
+
+
+public Usuario findById(int id) throws DataException {
+	
+	Connection c = null;
+	
+	try {
+		
+		c = GetConnection.getConnection();
+		c.setAutoCommit(true);
+		
+		Usuario u = usuarioDAO.findById(c, id); 
+		
+		return u;
+		
+	} catch (SQLException e){
+		logger.warn(e.getMessage(), e);
+		throw new DataException(e);
+	} finally {
+		DBUtils.closeConnection(c);
+	}
 	
 }
 	

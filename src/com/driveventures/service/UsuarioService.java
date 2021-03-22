@@ -6,6 +6,7 @@ import DBCUtils.DataException;
 
 public interface UsuarioService {
 
+	public Usuario findById(int id) throws DataException;
 	
 	public Usuario login(String email, String password) throws DataException;
 	

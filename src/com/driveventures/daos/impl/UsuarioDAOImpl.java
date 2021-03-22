@@ -44,12 +44,11 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
 			preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
-			// Establece os parámetros
+			
 			int i = 1;
 			preparedStatement.setString(i++, "%"+email.toUpperCase()+"%");
 
-			resultSet = preparedStatement.executeQuery();			
-			//STEP 5: Extract data from result set			
+			resultSet = preparedStatement.executeQuery();					
 
 			if (resultSet.next()) {
 				u =  loadNext(connection, resultSet);			
@@ -67,44 +66,42 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 		}
 	}
 
-	public Usuario findById(int id) throws DataException {
-
-		Usuario result= null;
-		Connection conn = null;
-		Statement stmt = null;
-		ResultSet rs = null;
+	public Usuario findById(Connection connection, int id) throws DataException {
+		
+		Usuario u = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
 		try {
-
-			conn = DBCUtils.GetConnection.getConnection();
-
-			logger.debug("Creating statement...");
-			stmt = conn.createStatement();
 			String sql;
+			
 			sql = "SELECT nombre , email, apellido "
 					+" FROM usuario"
-					+" WHERE id = " +id;
+					+" WHERE id = ? ";
+			
+			preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			
+			int i = 1;
+			preparedStatement.setInt(i++, id);
 
-			ResultSet rsl = stmt.executeQuery(sql);
+			resultSet = preparedStatement.executeQuery();					
 
-			if (rsl.next()) {			
-				result = loadNext(conn, rs);			
-			}
-			rsl.close();
-			stmt.close();
-			conn.close();
-		} catch (SQLException se) {
-			logger.error(se);
-		} catch (Exception e) {
-			logger.error(e);
-		} finally {
+			if (resultSet.next()) {
+				u =  loadNext(connection, resultSet);			
 
-			DBUtils.closeConnection(conn);
-			DBUtils.closeStatement(stmt);
-			DBUtils.closeResultSet(rs);
+			} 
+
+			return u;
+
+		} catch (SQLException ex) {
+			logger.warn(ex.getMessage(), ex);
+			throw new DataException(ex);
+		} finally {            
+			DBUtils.closeResultSet(resultSet);
+			DBUtils.closeStatement(preparedStatement);
 		}
 
-		return result;
 	}
+		
 
 	
 	public Usuario create(Connection connection, Usuario u) throws DataException{

@@ -29,7 +29,7 @@ public Conductor findById(int id) throws DataException, SQLException;
 	
 	public Conductor findByViajes(int viajes) throws DataException, SQLException;
 
-	public void create(Conductor conductor) throws Exception;
+	public Conductor create(Conductor conductor) throws Exception;
 
 	public void update(Conductor conductor) throws Exception;
 	

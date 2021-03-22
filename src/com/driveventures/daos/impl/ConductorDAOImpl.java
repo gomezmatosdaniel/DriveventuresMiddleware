@@ -361,7 +361,8 @@ public class ConductorDAOImpl implements ConductorDAO {
   }
 
 	@Override
-	public void create(Conductor conductor) throws Exception {
+	public Conductor create(Conductor conductor) throws Exception {
+		return conductor;
 		// TODO Auto-generated method stub
 		
 	}

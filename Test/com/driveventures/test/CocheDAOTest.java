@@ -6,8 +6,9 @@ import org.apache.log4j.Logger;
 import com.driveventures.daos.impl.CocheDAOImpl;
 import com.driveventures.daos.impl.CocheDTODAOImpl;
 import com.driveventures.model.Coche;
-
 import com.driveventures.model.CocheDTO;
+
+import DBCUtils.DataException;
 
 public class CocheDAOTest {
 	
@@ -96,13 +97,25 @@ public void testFindId() {
 		}
 	}
 	
+	public void testCreate() throws DataException {
+		Coche c = new Coche();
+		c.setNombreModelo("Mercedes");
+		c.setFechaMatriculacion(2020);
+		c.setPlazas(5);
+		c.setMatricula("3007 SCH");
+		c.setIdModelo(7L);
+
+		c = cocheDAO.add(c);
+		System.out.println("Cuidador "+ c.getId()+ " creado");
+	}
 	
-	public static final void main(String args[]) {
+	public static final void main(String args[]) throws DataException {
 		CocheDAOTest test = new CocheDAOTest();
 		test.testFindId();
 		test.testFindByAnho();
 		test.testFindByMarca();
 		test.testFindByPlazas();
+		test.testCreate();
 	}
 }
 	
