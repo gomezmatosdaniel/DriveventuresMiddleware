@@ -15,6 +15,7 @@ private CocheDAOImpl cocheDAO = null;
 	}
 	
 	public void testCreate() throws Exception {
+		
 		System.out.println("Testing create ...");
 		Coche c = new Coche();
 		c.setNombre("Audi");

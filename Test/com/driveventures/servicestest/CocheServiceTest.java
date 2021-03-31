@@ -93,6 +93,17 @@ class CocheServiceTest {
 		
 	}
 	
+	protected void testAdd() throws SQLException, DataException {
+		
+		logger.info("Testing Add");
+
+		
+			Coche c = new Coche();
+			
+
+
+			
+	}
 
 	public static void main(String args[]) throws DataException, SQLException {
 		CocheServiceTest test = new CocheServiceTest();

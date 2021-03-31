@@ -1,6 +1,6 @@
 package DBCUtils;
 
-public class DataException extends BusinessException {
+public class DataException extends Exception {
 
 	
 	public DataException() {

@@ -130,7 +130,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 			int insertedRows = preparedStatement.executeUpdate();
 
 			if (insertedRows == 0) {
-				throw new SQLException("Can not add row to table 'Usuarios'");
+				throw new SQLException("Can not add row to table 'Usuario'");
 			}
 
 			resultSet = preparedStatement.getGeneratedKeys();
@@ -241,12 +241,47 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 	private Usuario loadNext(Connection connection, ResultSet rs) throws SQLException {
 		Usuario u = new Usuario();
 		int i = 1;
+		u.setId(rs.getLong(i++));
+		u.setEmail(rs.getString(i++));
 		u.setNombre(rs.getString(i++));
 		u.setApellidos(rs.getString(i++));
-		u.setEmail(rs.getString(i++));
+		u.setPassword(rs.getString(i++));
 		return u;
 
 
 	}
 
-}
+
+	@Override
+	public long delete(Connection connection, Long id) throws DataException {
+		PreparedStatement preparedStatement = null;
+
+		try {
+			
+
+			String queryString =	
+					"DELETE FROM USUARIO " 
+							+ "WHERE ID = ? ";
+
+
+			preparedStatement = connection.prepareStatement(queryString);
+
+			int i = 1;
+			preparedStatement.setLong(i++, id);
+
+			long removedRows = preparedStatement.executeUpdate();
+
+			return removedRows;
+
+		} catch (SQLException e) {
+			logger.warn(e.getMessage(), e);
+			throw new DataException(e);
+		} finally {
+			DBUtils.closeStatement(preparedStatement);
+		}
+
+
+	}
+
+	}
+

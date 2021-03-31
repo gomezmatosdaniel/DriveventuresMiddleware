@@ -17,5 +17,10 @@
 	<classpathentry kind="lib" path="lib/log4j-core-2.14.0.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-api-2.14.0.jar"/>
 	<classpathentry kind="lib" path="config"/>
+	<classpathentry kind="lib" path="lib/velocity-engine-core-2.3.jar"/>
+	<classpathentry kind="lib" path="lib/velocity-tools-generic-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.7.26.jar"/>
+	<classpathentry kind="lib" path="lib/mchange-commons-java-0.2.11.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-simple-1.7.26.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,5 +1,8 @@
 package com.driveventures.test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import com.driveventures.daos.impl.UsuarioDAOImpl;
 import com.driveventures.model.Usuario;
 import com.driveventures.service.UsuarioService;
@@ -41,6 +44,16 @@ private UsuarioDAOImpl  UsuarioDAO= null;
 		}
 	
 	}
+	
+	public void testDelete() throws DataException, SQLException {
+		UsuarioDAOImpl UsuarioDAO = new UsuarioDAOImpl();
+		Connection conn = null;
+		conn = GetConnection.getConnection();
+		long id = 44;
+		id = UsuarioDAO.delete(conn, 44l);
+		System.out.println("Se elimino el usuario con id "+id);
+
+		}
 	
 	public static final void main(String args[]) throws DataException {
 		UsuarioDAOTest test = new UsuarioDAOTest();

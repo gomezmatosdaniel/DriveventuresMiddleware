@@ -17,4 +17,9 @@ public interface ConductorService {
 	public List<Conductor> findByBuenaRuta(int buenaruta) throws DataException, SQLException;
 	
 	public List<Conductor> findByExcelenteServicio(int excelenteservicio) throws DataException, SQLException;
+
+	public List<Conductor> findByResidencia (String Residencia) throws DataException, SQLException;
+	
+	public Conductor create(Conductor co) throws DataException, Exception;
+	
 }

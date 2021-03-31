@@ -17,6 +17,8 @@ public interface UsuarioDAO {
 	public Usuario create(Connection connection, Usuario usuario) throws DataException;
 
 	public void update(Connection connection, Usuario usuario) throws DataException;
+	
+	public long delete(Connection connection, Long id) throws DataException;
 
     
 }

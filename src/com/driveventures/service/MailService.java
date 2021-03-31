@@ -7,7 +7,7 @@ import DBCUtils.MailException;
 public interface MailService {
 
 	
-	public void sendEmail(String to, String message) throws MailException, EmailException;
+	public void sendEmail(String message, String subject, String to) throws MailException, EmailException;
 	
 	
 }

@@ -1,6 +1,7 @@
 package com.driveventures.daos;
 
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface ConductorDAO {
 
 
 
-public Conductor findById(int id) throws DataException, SQLException;
+public Conductor findById(Connection connection, int id) throws DataException, SQLException;
 	
 	public Conductor findByEmail(String email) throws DataException, SQLException;
 
@@ -28,8 +29,10 @@ public Conductor findById(int id) throws DataException, SQLException;
 	public List <Conductor> findByExcelenteServicio(int excelenteservicio) throws DataException, SQLException;
 	
 	public Conductor findByViajes(int viajes) throws DataException, SQLException;
+	
+	public List <Conductor> findByResidencia(Connection connection, String Residencia) throws DataException, SQLException;
 
-	public Conductor create(Conductor conductor) throws Exception;
+	public Conductor create(Connection connection, Conductor conductor) throws Exception;
 
 	public void update(Conductor conductor) throws Exception;
 	

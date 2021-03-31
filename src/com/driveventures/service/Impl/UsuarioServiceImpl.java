@@ -1,21 +1,27 @@
 package com.driveventures.service.Impl;
 
 import java.sql.Connection;
-
-
-
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.commons.mail.EmailException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.driveventures.daos.UsuarioDAO;
 import com.driveventures.daos.impl.UsuarioDAOImpl;
 import com.driveventures.model.Usuario;
+import com.driveventures.service.MailService;
 import com.driveventures.service.UsuarioService;
+import com.driveventures.velocity.MailEngineBuilder;
+import com.driveventures.velocity.MapNames;
+import com.driveventures.velocity.TemplatesURLs;
+
 import DBCUtils.DBUtils;
 import DBCUtils.DataException;
 import DBCUtils.GetConnection;
+import DBCUtils.MailException;
 import DBCUtils.PasswordEncryptionUtil;
 
 public class UsuarioServiceImpl implements UsuarioService {
@@ -77,13 +83,16 @@ public Usuario login(String email, String password) throws DataException {
 
 
 @Override
-public Usuario create(Usuario u) throws DataException {
+public Usuario create(Usuario u) throws DataException, MailException, EmailException {
 
 	
 	boolean commit = false;
 	Connection c = null;
+	MailService mailService = null;
+	Map<String, Object> mapa = null;
 	
 try {
+		mailService = new MailServiceImpl();
 	c = GetConnection.getConnection();
 	c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 	c.setAutoCommit(false);
@@ -93,7 +102,13 @@ try {
 	u = usuarioDAO.create(c,u);
 	
 	
-	commit=true;
+	mapa = new HashMap<String, Object>();
+	mapa.put(MapNames.NOMBRE, u.getNombre());
+	String template = TemplatesURLs.WELCOME_TEMPLATE;
+	String mensaje = MailEngineBuilder.createMail(template, mapa);
+	mailService.sendEmail(mensaje, "Benvido a Driveventures" ,u.getEmail());
+	
+	commit = true;
 	
 	return u;
 	
@@ -155,6 +170,36 @@ public Usuario findById(int id) throws DataException {
 		DBUtils.closeConnection(c);
 	}
 	
+}
+
+
+@Override
+public long delete(Long id) throws DataException {
+	Connection connection = null;
+    boolean commit = false;
+    Long result = null;
+
+    try {
+      
+        connection = GetConnection.getConnection();
+
+        connection.setTransactionIsolation(
+                Connection.TRANSACTION_READ_COMMITTED);
+
+        connection.setAutoCommit(false);
+        
+        result = usuarioDAO.delete(connection, id);   
+        
+        commit = true;            
+        return result;
+        
+    } catch (SQLException e) {
+    	logger.warn(e.getMessage(), e);
+        throw new DataException(e);
+
+    } finally {
+    	DBUtils.closeConnection(connection, commit);
+    }	
 }
 	
 }

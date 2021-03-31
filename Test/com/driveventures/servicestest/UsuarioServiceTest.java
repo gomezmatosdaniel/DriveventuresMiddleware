@@ -1,12 +1,17 @@
 package com.driveventures.servicestest;
 
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.apache.commons.mail.EmailException;
 
 import com.driveventures.model.Usuario;
 import com.driveventures.service.UsuarioService;
 import com.driveventures.service.Impl.UsuarioServiceImpl;
 
 import DBCUtils.DataException;
+import DBCUtils.MailException;
 
 public class UsuarioServiceTest {
 
@@ -16,24 +21,29 @@ public class UsuarioServiceTest {
 		usuarioService = new UsuarioServiceImpl();
 	}
 	
-	public void testFindById() throws DataException {
+	/**public void testFindById() throws DataException {
 		usuarioService.findById(1);
-	}
+	} **/
 	
-	/**public void testCreate() throws DataException {
+	/** public void testCreate() throws DataException , MailException, EmailException {
 		
 		Usuario u = new Usuario();
-		u.setEmail("zzzzzzzzzz@gmail.com");
+		u.setEmail("gomezmatossssdgdaniel@gmail.com");
 		u.setNombre("Encriptado");
 		u.setApellidos("Encriptando");
 		u.setPassword("abc123.");
 
-		usuarioService.create(u);
+		try {
+			usuarioService.create(u);
+		} catch (DataException | MailException | EmailException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.out.println(u);
 	} **/
 	
 	public void testLogin() throws DataException {
-		usuarioService.login("jaime21@hotmail.com", "abc123.");
+		usuarioService.login("gomezmatosdaniel@gmail.com", "123");
 		
 	}
 	
@@ -49,13 +59,23 @@ public class UsuarioServiceTest {
 		usuarioService.update(u);
 	} **/
 	
+	public void testDelete()
+			throws Exception{
+		
+		long id = 44;
+		id = usuarioService.delete(id);
+		System.out.println("Se elimino el usuario con id "+id);
+
+	}
+	
 	public static final void main(String args[]) throws DataException {
 		UsuarioServiceTest test = new UsuarioServiceTest();
 		try {
 		test.testLogin();
 		//test.testUpdate();
 		//test.testCreate();
-		test.testFindById();
+		//test.testFindById();
+		test.testDelete();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

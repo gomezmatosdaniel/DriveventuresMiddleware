@@ -3,7 +3,6 @@ package com.driveventures.daos;
 import java.sql.SQLException;
 
 import com.driveventures.model.Coche;
-import com.driveventures.model.CocheDTO;
 
 import DBCUtils.DataException;
 

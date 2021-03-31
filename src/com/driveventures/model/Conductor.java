@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class Conductor extends Usuario {
 
-	public Long id;
+	public Long user_id;
 	public String nombre;
 	public String apellidos;
 	public String email;
@@ -21,17 +21,18 @@ public class Conductor extends Usuario {
 	public double lat;
 	public double lon;
 	public String residencia;
+	public int idioma_id;
 
 	public Conductor() {
 		
 	}
 
 	public Long getId() {
-		return id;
+		return user_id;
 	}
 
 	public void setId(Long id) {
-		this.id = id;
+		this.user_id = id;
 	}
 
 	public String getNombre() {
@@ -136,6 +137,30 @@ public class Conductor extends Usuario {
 
 	public void setAnosexp(int anosexp) {
 		this.anosexp = anosexp;
+	}
+
+	public Long getUser_id() {
+		return user_id;
+	}
+
+	public void setUser_id(Long user_id) {
+		this.user_id = user_id;
+	}
+
+	public int getExcelenteservicio() {
+		return Excelenteservicio;
+	}
+
+	public void setExcelenteservicio(int excelenteservicio) {
+		Excelenteservicio = excelenteservicio;
+	}
+
+	public int getIdioma_id() {
+		return idioma_id;
+	}
+
+	public void setIdioma_id(int idioma_id) {
+		this.idioma_id = idioma_id;
 	}
 
 	public String getResidencia() {
