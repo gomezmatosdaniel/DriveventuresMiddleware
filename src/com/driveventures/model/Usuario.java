@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class Usuario  {
 
-	private Long id;
+	public Long id;
 	private String nombre;
 	private String apellidos;
 	private String email;

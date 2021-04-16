@@ -28,15 +28,10 @@ private ConductorDAOImpl conductorDAO = null;
 		conn = GetConnection.getConnection();
 		conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 		conn.setAutoCommit(false);
-		c.setNombre("RamoN");
-		c.setNumviajes(0);
-		c.setAnosexp(0);
+		c.setUser_id(12L);
 		c.setDni("3273738A");
 		c.setResidencia("Lugo");
-		c.setBuenaconversacion(0);
-		c.setBuenaruta(0);
-		c.setExcelenteserviscio(0);
-		c.setIdioma_id(1);
+		c.setIdioma_principal("Español");
 		c = conductorDAO.create(conn, c);
 		System.out.println("Cuidador "+ c.getId()+ " creado");
 	}

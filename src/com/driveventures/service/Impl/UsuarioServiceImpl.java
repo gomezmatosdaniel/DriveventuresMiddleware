@@ -66,7 +66,8 @@ public Usuario login(String email, String password) throws DataException {
 			logger.debug("Usuario "+u.getEmail()+" autenticado!");
 			return u;
 		} else {
-			return null;
+			if(logger.isDebugEnabled()) logger.debug("Psswd inorrecta");
+			throw new DataException("Hemos detetado un problema, comprueba los datos introducidos");
 		}
 		
 		

@@ -12,8 +12,10 @@ import org.apache.logging.log4j.Logger;
 import com.driveventures.daos.ConductorDAO;
 import com.driveventures.daos.impl.ConductorDAOImpl;
 import com.driveventures.model.Conductor;
+import com.driveventures.model.Usuario;
 import com.driveventures.service.ConductorService;
 import com.driveventures.service.MailService;
+import com.driveventures.service.Results;
 import com.driveventures.velocity.MailEngineBuilder;
 import com.driveventures.velocity.MapNames;
 import com.driveventures.velocity.TemplatesURLs;
@@ -21,19 +23,20 @@ import com.driveventures.velocity.TemplatesURLs;
 import DBCUtils.DBUtils;
 import DBCUtils.DataException;
 import DBCUtils.GetConnection;
+import DBCUtils.PasswordEncryptionUtil;
 
 public class ConductorServiceImpl implements ConductorService {
 
 	private static Logger logger = LogManager.getLogger(ConductorServiceImpl.class);
 	
-	public ConductorDAO dao = null;
+	public ConductorDAO conductorDAO = null;
 
 	public ConductorServiceImpl() {
-		dao = new ConductorDAOImpl();
+		conductorDAO = new ConductorDAOImpl();
 	}
 
 
-	public Conductor findByViajes(int viajes) throws DataException, SQLException {
+	public List <Conductor> findByViajes(int viajes) throws DataException, SQLException {
 		Connection conn = null;
 
 		try {
@@ -41,7 +44,7 @@ public class ConductorServiceImpl implements ConductorService {
 
 			conn = GetConnection.getConnection();
 
-			return dao.findByViajes(viajes);
+			return conductorDAO.findByViajes(conn, viajes);
 
 		} catch (SQLException e) {
 			throw new DataException(e);
@@ -59,7 +62,7 @@ public class ConductorServiceImpl implements ConductorService {
 
 			conn = GetConnection.getConnection();
 
-			return dao.findByBuenaConversacion(buenaconversacion);
+			return conductorDAO.findByBuenaConversacion(conn, buenaconversacion);
 
 		} catch (SQLException e) {
 			throw new DataException(e);
@@ -77,7 +80,7 @@ public List<Conductor> findByBuenaRuta(int buenaruta) throws DataException, SQLE
 
 		conn = GetConnection.getConnection();
 
-		return dao.findByBuenaRuta(buenaruta);
+		return conductorDAO.findByBuenaRuta(conn, buenaruta);
 
 	} catch (SQLException e) {
 		throw new DataException(e);
@@ -87,8 +90,8 @@ public List<Conductor> findByBuenaRuta(int buenaruta) throws DataException, SQLE
 }
 
 
-@Override
-public List<Conductor> findByExcelenteServicio(int excelenteservicio) throws DataException, SQLException {
+
+public Results<Conductor> findByExcelenteServicio(int excelenteservicio, int startIndex, int count) throws DataException, SQLException {
 	
 	Connection conn = null;
 	
@@ -96,7 +99,7 @@ public List<Conductor> findByExcelenteServicio(int excelenteservicio) throws Dat
 		
 		conn = GetConnection.getConnection();
 		
-		return dao.findByExcelenteServicio(excelenteservicio);
+		return conductorDAO.findByExcelenteServicio(conn, excelenteservicio, startIndex, count);
 		
 	} catch (SQLException e) {
 		throw new DataException(e);
@@ -121,14 +124,9 @@ try {
 	
 	
 	
-	co = dao.create(c, co);
+	co = conductorDAO.create(c, co);
 	
 	
-	mapa = new HashMap<String, Object>();
-	mapa.put(MapNames.NOMBRE, co.getNombre());
-	String template = TemplatesURLs.WELCOME_TEMPLATE;
-	String mensaje = MailEngineBuilder.createMail(template, mapa);
-	mailService.sendEmail(mensaje, "Benvido a Driveventures" ,co.getEmail());
 	
 	commit = true;
 	
@@ -151,7 +149,7 @@ public List<Conductor> findByResidencia(String Residencia) throws DataException,
 
 		conn = GetConnection.getConnection();
 
-		return dao.findByResidencia(conn, Residencia);
+		return conductorDAO.findByResidencia(conn, Residencia);
 
 	} catch (SQLException e) {
 		throw new DataException(e);
@@ -159,6 +157,72 @@ public List<Conductor> findByResidencia(String Residencia) throws DataException,
 		DBUtils.closeConnection(conn);
 	}
 }
+
+
+public Conductor login(String email, String password) throws DataException {
+	if(logger.isDebugEnabled()) {
+		logger.debug("Email = {}, contraseña = {}", email, (password == null));
+	}
+	
+	Connection connection = null;
+	
+try {
+	connection = GetConnection.getConnection();
+	connection.setAutoCommit(true);
+	
+	
+	
+	if( email == null ) {
+		return null;
+	}
+	
+	if( password == null ) {
+		return null;
+	}
+	
+	Conductor c = conductorDAO.findByEmail(connection, email);
+	
+	if(c == null) {
+		return c;
+	} 
+	
+	if(PasswordEncryptionUtil.checkPassword(password, c.getPassword())) {
+		logger.debug("Conductor "+c.getEmail()+" autenticado!");
+		return c;
+	} else {
+		if(logger.isDebugEnabled()) logger.debug("Psswd inorrecta");
+		throw new DataException("Hemos detetado un problema, comprueba los datos introducidos");
+	}
+	
+	
+			
+			
+		} catch (SQLException e){
+			logger.warn(e.getMessage(), e);
+			throw new DataException(e);
+		} finally {
+			DBUtils.closeConnection(connection);
+		}
+}
+
+
+@Override
+public List<Conductor> findByAñosExp(int anhos_experiencia) throws DataException, SQLException {
+	Connection conn = null;
+
+	try {
+
+		conn = GetConnection.getConnection();
+
+		return conductorDAO.findByBuenaRuta(conn, anhos_experiencia);
+
+	} catch (SQLException e) {
+		throw new DataException(e);
+	} finally {
+		DBUtils.closeConnection(conn);
+	}
+}
+
 	
 	
 }

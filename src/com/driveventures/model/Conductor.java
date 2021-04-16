@@ -21,7 +21,8 @@ public class Conductor extends Usuario {
 	public double lat;
 	public double lon;
 	public String residencia;
-	public int idioma_id;
+	public String idioma_principal;
+	public int coche_id;
 
 	public Conductor() {
 		
@@ -155,12 +156,13 @@ public class Conductor extends Usuario {
 		Excelenteservicio = excelenteservicio;
 	}
 
-	public int getIdioma_id() {
-		return idioma_id;
+
+	public String getIdioma_principal() {
+		return idioma_principal;
 	}
 
-	public void setIdioma_id(int idioma_id) {
-		this.idioma_id = idioma_id;
+	public void setIdioma_principal(String idioma_principal) {
+		this.idioma_principal = idioma_principal;
 	}
 
 	public String getResidencia() {
@@ -179,6 +181,14 @@ public class Conductor extends Usuario {
 		this.lon = lon;
 	}
 	
+	public int getCoche_id() {
+		return coche_id;
+	}
+
+	public void setCoche_id(int coche_id) {
+		this.coche_id = coche_id;
+	}
+
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}

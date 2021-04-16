@@ -14,11 +14,10 @@ import org.apache.log4j.Logger;
 import com.driveventures.daos.ConductorDAO;
 import com.driveventures.daos.UsuarioDAO;
 import com.driveventures.model.Conductor;
-import com.driveventures.model.Usuario;
+import com.driveventures.service.Results;
 
 import DBCUtils.DBUtils;
 import DBCUtils.DataException;
-import DBCUtils.PasswordEncryptionUtil;
 
 public class ConductorDAOImpl implements ConductorDAO {
 	
@@ -40,7 +39,7 @@ public class ConductorDAOImpl implements ConductorDAO {
 				
 		      String sql;
 		      sql = " SELECT u.email, u.nombre, u.apellido, c.user_id, c.viajes, "
-						+ " c.años_experiencia, c.buena_conversacion, c.buena_ruta, "
+						+ " c.anhos_experiencia, c.buena_conversacion, c.buena_ruta, "
 						+ " c.excelente_servicio, c.Residencia "
 						+ " FROM usuario u "
 						+ " INNER JOIN conductor c "
@@ -72,62 +71,42 @@ public class ConductorDAOImpl implements ConductorDAO {
 	
 
 	
-	public Conductor findByEmail(String email) throws DataException, SQLException {
+	public Conductor findByEmail(Connection connection, String email) throws DataException, SQLException {
 		
-		Conductor result= null;
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		String sql = null;
-		
-		try {
-			
-			conn = DBCUtils.GetConnection.getConnection();
+		Conductor c = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		try{
+
+			String sql;
+			sql =    "SELECT USER_ID, EMAIL, NOMBRE, APELLIDOS, PASSWORD "
+					+" FROM CONDUCTOR "
+					+" WHERE "
+					+"	UPPER(EMAIL) LIKE ?";
+
+
+			preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
 			
-			sql = " SELECT u.email, u.nombre, u.apellido, c.user_id, c.viajes, "
-					+ " c.años_experiencia, c.buena_conversacion, c.buena_ruta, "
-					+ " c.excelente_servicio, c.Residencia "
-					+ " FROM usuario u "
-					+ " INNER JOIN conductor c "
-					+ " ON u.id = c.user_id "
-					+ " WHERE UPPER(u.email) like ? "; 
-
-
-			System.out.println(sql);
-			PreparedStatement preparedStatement = conn.prepareStatement(sql,
-					ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-
 			int i = 1;
+			preparedStatement.setString(i++, "%"+email.toUpperCase()+"%");
 
-			preparedStatement.setString(i++,email.toUpperCase());
+			resultSet = preparedStatement.executeQuery();					
 
+			if (resultSet.next()) {
+				c =  loadNext(connection, resultSet);			
 
-			ResultSet resultSet = preparedStatement.executeQuery();
-			result = new Conductor();
-			
+			} 
 
-			while (resultSet.next()) {
-				result= new Conductor();
-				result = loadNext(conn, resultSet);				
+			return c;
 
-			}
-			resultSet.close();
-
-			conn.close();
-		} catch (SQLException se) {
-			logger.error(se);
-		} catch (Exception e) {
-			logger.error(e);
-		} finally {
-			
-			DBUtils.closeConnection(conn);
-			DBUtils.closeStatement(stmt);
-			DBUtils.closeResultSet(rs);
-			DBUtils.closePreparedStatement(stmt);
+		} catch (SQLException ex) {
+			logger.warn(ex.getMessage(), ex);
+			throw new DataException(ex);
+		} finally {            
+			DBUtils.closeResultSet(resultSet);
+			DBUtils.closeStatement(preparedStatement);
 		}
-		
-		return result;
 	}
 		
 
@@ -151,7 +130,7 @@ public class ConductorDAOImpl implements ConductorDAO {
 	      logger.debug("Creating statement...");
 	      String sql;
 	      sql = " SELECT u.email, u.nombre, u.apellido, c.user_id, c.viajes, "
-					+ " c.años_experiencia, c.buena_conversacion, c.buena_ruta, "
+					+ " c.anhos_experiencia, c.buena_conversacion, c.buena_ruta, "
 					+ " c.excelente_servicio, c.Residencia "
 					+ " FROM usuario u "
 					+ " INNER JOIN conductor c "
@@ -187,146 +166,162 @@ public class ConductorDAOImpl implements ConductorDAO {
   }
 
 	@Override
-	public List<Conductor> findByBuenaConversacion(int buenaconversacion) throws DataException, SQLException {
-		List<Conductor> result = null;
-		Connection conn = null;
-		PreparedStatement stmt = null;
+	public List<Conductor> findByBuenaConversacion(Connection connection, int buenaconversacion) throws DataException, SQLException {
+		List<Conductor> co = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet rs = null;
-		try {
-	    	
-	    	conn = DBCUtils.GetConnection.getConnection();
-
-	      logger.debug("Creating statement...");
-	      String sql;
+		
+	try {
+    	
+		String sql;
 	      sql = " SELECT u.email, u.nombre, u.apellido, c.user_id, c.viajes, "
-					+ " c.años_experiencia, c.buena_conversacion, c.buena_ruta, "
+					+ " c.anhos_experiencia, c.buena_conversacion, c.buena_ruta, "
 					+ " c.excelente_servicio, c.Residencia "
 					+ " FROM conductor c "
 					+ " INNER JOIN usuario u "
-					+ " ON c.user_id = u.id "
-					+ " WHERE c.buena_conversacion >= " +buenaconversacion;
+					+ " ON c.user_id = u.id ";
+					if(+buenaconversacion >= 100) {
+				    	  sql+= " WHERE c.buena_ruta >= 100 ";
+				      }
+				      if(buenaconversacion < 100 ) {
+				    	  sql+= " WHERE c.buena_ruta < 100 ";
+				      }
 	    		
-	      stmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+				      preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+				      rs = preparedStatement.executeQuery();
+				      
+				      List<Conductor> results = new ArrayList<Conductor>();                        
+						Conductor c = null;
+						
+						while(rs.next()) {
+							c = loadNext(connection, rs);
+							results.add(c);               	
+						}
+						return results;
 
-	      rs = stmt.executeQuery();
-	      
-	      List<Conductor> results = new ArrayList<Conductor>();                        
-			Conductor c = null;
-			
-			while(rs.next()) {
-				c = loadNext(conn, rs);
-				results.add(c);               	
-			}
-			return results;
-
-		} catch (SQLException ex) {
-			logger.warn(ex.getMessage(), ex);
-			throw new DataException(ex);
-		} finally {            
-			DBUtils.closeResultSet(rs);
-			DBUtils.closeStatement(stmt);
-		}
+					} catch (SQLException ex) {
+						logger.warn(ex.getMessage(), ex);
+						throw new DataException(ex);
+					} finally {            
+						DBUtils.closeResultSet(rs);
+						DBUtils.closeStatement(preparedStatement);
+					}
 	}
 
 	@Override
-	public List<Conductor> findByBuenaRuta(int buenaruta) throws DataException, SQLException {
-		List<Conductor> result = null;
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
+	public List<Conductor> findByBuenaRuta(Connection connection, int buenaruta) throws DataException, SQLException {
+		
+		List<Conductor> co = null;
+			PreparedStatement preparedStatement = null;
+			ResultSet rs = null;
+			
 		try {
 	    	
-	    	conn = DBCUtils.GetConnection.getConnection();
-
-	      logger.debug("Creating statement...");
-	      String sql;
+			String sql;
 	      sql = " SELECT u.email, u.nombre, u.apellido, c.user_id, c.viajes, "
-					+ " c.años_experiencia, c.buena_conversacion, c.buena_ruta, "
+					+ " c.anhos_experiencia, c.buena_conversacion, c.buena_ruta, "
 					+ " c.excelente_servicio, c.Residencia "
 					+ " FROM conductor c "
 					+ " INNER JOIN usuario u "
-					+ " ON c.user_id = u.id "
-					+ " WHERE c.buena_ruta >= " +buenaruta;
+					+ " ON c.user_id = u.id ";
+					
+					 if(+buenaruta >= 100) {
+				    	  sql+= " WHERE c.buena_ruta >= 100 ";
+				      }
+				      if(buenaruta < 100 ) {
+				    	  sql+= " WHERE c.buena_ruta < 100 ";
+				      }
 	    		
-	      stmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+				      preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+				      rs = preparedStatement.executeQuery();
+				      
+				      List<Conductor> results = new ArrayList<Conductor>();                        
+						Conductor c = null;
+						
+						while(rs.next()) {
+							c = loadNext(connection, rs);
+							results.add(c);               	
+						}
+						return results;
 
-	      rs = stmt.executeQuery();
-	      
-	      List<Conductor> results = new ArrayList<Conductor>();                        
-			Conductor c = null;
-			
-			while(rs.next()) {
-				c = loadNext(conn, rs);
-				results.add(c);               	
-			}
-			return results;
-
-		} catch (SQLException ex) {
-			logger.warn(ex.getMessage(), ex);
-			throw new DataException(ex);
-		} finally {            
-			DBUtils.closeResultSet(rs);
-			DBUtils.closeStatement(stmt);
-		}
+					} catch (SQLException ex) {
+						logger.warn(ex.getMessage(), ex);
+						throw new DataException(ex);
+					} finally {            
+						DBUtils.closeResultSet(rs);
+						DBUtils.closeStatement(preparedStatement);
+					}
 	}
 
 	@Override
-	public List<Conductor> findByExcelenteServicio(int excelenteservicio) throws DataException, SQLException {
-		List<Conductor> result = null;
-		Connection conn = null;
-		PreparedStatement stmt = null;
+	public Results<Conductor> findByExcelenteServicio(Connection connection, int excelenteservicio, int startIndex, int count) throws DataException, SQLException {
+		List<Conductor> co = null;
+		PreparedStatement preparedStatement = null;
 		ResultSet rs = null;
-		try {
-	    	
-	    	conn = DBCUtils.GetConnection.getConnection();
-
-	      logger.debug("Creating statement...");
-	      String sql;
+		
+	try {
+    	
+		String sql;
 	      sql = " SELECT u.email, u.nombre, u.apellido, c.user_id, c.viajes, "
-					+ " c.años_experiencia, c.buena_conversacion, c.buena_ruta, "
+					+ " c.anhos_experiencia, c.buena_conversacion, c.buena_ruta, "
 					+ " c.excelente_servicio, c.Residencia "
 					+ " FROM conductor c "
 					+ " INNER JOIN usuario u "
-					+ " ON c.user_id = u.id "
-					+ " WHERE c.excelente_servicio >= " +excelenteservicio;
+					+ " ON c.user_id = u.id ";
 	    		
-	      stmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-
-	      rs = stmt.executeQuery();
+	      if(+excelenteservicio >= 100) {
+	    	  sql+= " WHERE c.excelente_servicio >= 100 ";
+	      }
+	      if(excelenteservicio < 100 ) {
+	    	  sql+= " WHERE c.excelente_servicio < 100 ";
+	      }
+	
+	      preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+	      rs = preparedStatement.executeQuery();
 	      
-	      List<Conductor> results = new ArrayList<Conductor>();                        
+	      List<Conductor> page = new ArrayList<Conductor>();
 			Conductor c = null;
-			
-			while(rs.next()) {
-				c = loadNext(conn, rs);
-				results.add(c);               	
-			}
-			return results;
+			int currentCount = 0;
 
-		} catch (SQLException ex) {
-			logger.warn(ex.getMessage(), ex);
-			throw new DataException(ex);
-		} finally {            
-			DBUtils.closeResultSet(rs);
-			DBUtils.closeStatement(stmt);
-		}
+			if ((startIndex >=1) && rs.absolute(startIndex)) {
+				do {
+					c = loadNext(connection, rs); 
+					page.add(c);               	
+					currentCount++;                	
+				} while ((currentCount < count) && rs.next()) ;
+			}
+			
+			
+			int totalRows = DBUtils.getTotalRows(rs);
+
+			Results<Conductor> results = new Results<Conductor>(page, startIndex, totalRows);
+			
+			
+			return results;
+			
+
+	} catch (SQLException e) {
+		logger.warn(e.getMessage(), e);
+		throw new DataException(e);
+	} finally {
+		DBUtils.closeResultSet(rs);
+		DBUtils.closeStatement(preparedStatement);
+	}
 	}
 
 	@Override
-	public Conductor findByViajes(int viajes) throws DataException {
-		Conductor result = null;
-		Connection conn = null;
-	    Statement stmt = null;
-	    ResultSet rs = null;
+	public List<Conductor> findByViajes(Connection connection, int viajes) throws DataException {
+		
+		 List<Conductor> co = null;
+			PreparedStatement preparedStatement = null;
+			ResultSet rs = null;
+			
 		try {
 	    	
-	    	conn = DBCUtils.GetConnection.getConnection();
-
-	      logger.debug("Creating statement...");
-	      stmt = conn.createStatement();
-	      String sql;
+			String sql;
+			
 	      sql = " SELECT u.email, u.nombre, u.apellido, c.user_id, c.viajes, "
-					+ " c.años_experiencia, c.buena_conversacion, c.buena_ruta, "
+					+ " c.anhos_experiencia, c.buena_conversacion, c.buena_ruta, "
 					+ " c.excelente_servicio, c.Residencia "
 					+ " FROM usuario u "
 					+ " INNER JOIN conductor c "
@@ -338,42 +333,42 @@ public class ConductorDAOImpl implements ConductorDAO {
 	      if(viajes < 100 ) {
 	    	  sql+= " WHERE c.viajes < 100 ";
 	      }
-
-	      rs = stmt.executeQuery(sql);
-
-	      if (rs.next()) {			
-				result = loadNext(conn, rs);			
-			}
-	      rs.close();
-			stmt.close();
-			conn.close();
-		} catch (SQLException se) {
-			logger.error(se);
-		} catch (DataException e) {
-			logger.error(e);
-		} finally {
+	      
+	      preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+	      rs = preparedStatement.executeQuery();
+	      
+	      List<Conductor> results = new ArrayList<Conductor>();                        
+			Conductor c = null;
 			
-			DBUtils.closeConnection(conn);
-			DBUtils.closeStatement(stmt);
-			DBUtils.closeResultSet(rs);
+			while(rs.next()) {
+				c = loadNext(connection, rs);
+				results.add(c);               	
 			}
-		
-		return result;
+			return results;
+
+		} catch (SQLException ex) {
+			logger.warn(ex.getMessage(), ex);
+			throw new DataException(ex);
+		} finally {            
+			DBUtils.closeResultSet(rs);
+			DBUtils.closeStatement(preparedStatement);
+		}
   }
 
 	
 	public Conductor create(Connection connection, Conductor conductor) throws Exception {
+		
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-		
 		try {          
 		
-		String queryString = "INSERT INTO CONDUCTOR(USER_ID, VIAJES, AÑOS_EXPERIENCIA, DNI, RESIDENCIA, BUENA_CONVERSACION, BUENA_RUTA, EXCELENTE_SERVICIO, COCHE_ID, IDIOMA_ID)"
-		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		String queryString = "INSERT INTO CONDUCTOR (USER_ID, VIAJES, AÑOS_EXPERIENCIA, DNI, RESIDENCIA, BUENA_CONVERSACION, BUENA_RUTA, EXCELENTE_SERVICIO, COCHE_ID, IDIOMA_PRINCIPAL)"
+		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		preparedStatement = connection.prepareStatement(queryString, Statement.RETURN_GENERATED_KEYS);
 
 		int i = 1;     		
+		preparedStatement.setLong(i++, conductor.getUser_id());
 		preparedStatement.setInt(i++, conductor.getNumviajes());
 		preparedStatement.setInt(i++, conductor.getAñosexp());
 		preparedStatement.setString(i++, conductor.getDni());
@@ -381,11 +376,12 @@ public class ConductorDAOImpl implements ConductorDAO {
 		preparedStatement.setInt(i++, conductor.getBuenaconversacion());
 		preparedStatement.setInt(i++, conductor.getBuenaruta());
 		preparedStatement.setInt(i++, conductor.getExcelenteserviscio());
-		preparedStatement.setInt(i++, conductor.getIdioma_id());
+		preparedStatement.setInt(i++, conductor.getCoche_id());
+		preparedStatement.setString(i++, conductor.getIdioma_principal());
 		int insertedRows = preparedStatement.executeUpdate();
 
 		if (insertedRows == 0) {
-			throw new SQLException("Can not add row to table 'Usuario'");
+			throw new SQLException("Can not add row to table 'Conductor'");
 		}
 
 		resultSet = preparedStatement.getGeneratedKeys();
@@ -457,7 +453,7 @@ public class ConductorDAOImpl implements ConductorDAO {
 		      String sql;
 		      
 		      sql = " SELECT u.email, u.nombre, u.apellido, c.user_id, c.viajes, "
-						+ " c.años_experiencia, c.buena_conversacion, c.buena_ruta, "
+						+ " c.anhos_experiencia, c.buena_conversacion, c.buena_ruta, "
 						+ " c.excelente_servicio, c.Residencia "
 						+ " FROM usuario u "
 						+ " INNER JOIN conductor c "
@@ -488,6 +484,49 @@ public class ConductorDAOImpl implements ConductorDAO {
 					DBUtils.closeResultSet(rs);
 					DBUtils.closeStatement(preparedStatement);
 				}
+	}
+
+	@Override
+	public List<Conductor> findByAñosExp(Connection connection, int anhos_experiencia) throws DataException, SQLException {
+		List<Conductor> co = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet rs = null;
+		
+	try {
+    	
+		String sql;
+	      sql = " SELECT u.email, u.nombre, u.apellido, c.user_id, c.viajes, "
+					+ " c.anhos_experiencia, c.buena_conversacion, c.buena_ruta, "
+					+ " c.excelente_servicio, c.Residencia "
+					+ " FROM conductor c "
+					+ " INNER JOIN usuario u "
+					+ " ON c.user_id = u.id ";
+					if(+anhos_experiencia >= 100) {
+				    	  sql+= " WHERE c.buena_ruta >= 100 ";
+				      }
+				      if(anhos_experiencia < 100 ) {
+				    	  sql+= " WHERE c.buena_ruta < 100 ";
+				      }
+	    		
+				      preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+				      rs = preparedStatement.executeQuery();
+				      
+				      List<Conductor> results = new ArrayList<Conductor>();                        
+						Conductor c = null;
+						
+						while(rs.next()) {
+							c = loadNext(connection, rs);
+							results.add(c);               	
+						}
+						return results;
+
+					} catch (SQLException ex) {
+						logger.warn(ex.getMessage(), ex);
+						throw new DataException(ex);
+					} finally {            
+						DBUtils.closeResultSet(rs);
+						DBUtils.closeStatement(preparedStatement);
+					}
 	}
 }
 	

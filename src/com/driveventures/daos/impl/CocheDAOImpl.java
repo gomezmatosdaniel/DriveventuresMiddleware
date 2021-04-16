@@ -1,7 +1,6 @@
 package com.driveventures.daos.impl;
 
 import java.sql.Connection;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,9 +11,9 @@ import org.apache.log4j.Logger;
 
 import com.driveventures.daos.CocheDAO;
 import com.driveventures.model.Coche;
+import com.driveventures.model.Conductor;
 import com.driveventures.model.Marca;
 import com.driveventures.model.Modelo;
-
 
 import DBCUtils.DBUtils;
 import DBCUtils.DataException;
@@ -215,6 +214,7 @@ public class CocheDAOImpl implements CocheDAO {
 
 	public Coche add(Coche coche) throws DataException {
 
+		Conductor conductor = new Conductor();
 		Connection conn = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet rs = null;

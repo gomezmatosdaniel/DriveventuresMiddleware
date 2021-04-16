@@ -1,16 +1,21 @@
 package com.driveventures.servicestest;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.driveventures.daos.ConductorDAO;
+import com.driveventures.daos.impl.ConductorDAOImpl;
 import com.driveventures.model.Conductor;
-
+import com.driveventures.service.Results;
 import com.driveventures.service.Impl.ConductorServiceImpl;
 
+import DBCUtils.DBUtils;
 import DBCUtils.DataException;
+import DBCUtils.GetConnection;
 
 class ConductorServiceTest {
 
@@ -18,10 +23,10 @@ class ConductorServiceTest {
 
 	private ConductorServiceImpl ConductorService = null;
 
-
+	public ConductorDAO conductorDAO = null;
 	public ConductorServiceTest() {
 		ConductorService = new ConductorServiceImpl();
-
+		conductorDAO = new ConductorDAOImpl();
 	}
 
 	protected void testFindByViajes() throws Exception {
@@ -30,7 +35,7 @@ class ConductorServiceTest {
 
 		try {
 
-			Conductor c = ConductorService.findByViajes(2);			
+			List<Conductor> c = ConductorService.findByViajes(2);			
 			logger.debug(c.toString());
 
 		} catch (DataException t) {
@@ -72,28 +77,71 @@ class ConductorServiceTest {
 		logger.info("Test testFindByBuenaConversacion finished.\n");		
 	}
 	
-	protected void testFindByExcelenteServicio() throws DataException, SQLException {
+	
+	protected void testFindByResidencia() throws DataException, SQLException {
 
-		logger.info("Testing FindByExcelenteServicio");
+		logger.info("Testing FindByBuenaConversacion");
 
 		try {
 
-			List<Conductor> c = ConductorService.findByExcelenteServicio(10);			
+			List<Conductor> c = ConductorService.findByResidencia("Lugo");			
 			logger.debug(c.toString());
 
 		} catch (DataException t) {
 			logger.error(t);
 		}
 
-		logger.info("Test testFindByExcelenteServicio finished.\n");		
+		logger.info("Test testFindByBuenaConversacion finished.\n");		
 	}
+	
+	public Results<Conductor> findByExcelenteServicio(int excelenteservicio, int startIndex, int count) throws DataException, SQLException {
+		
+		Connection conn = null;
+		
+		try {
+			
+			conn = GetConnection.getConnection();
+			
+			return conductorDAO.findByExcelenteServicio(conn, excelenteservicio, startIndex, count);
+			
+		} catch (SQLException e) {
+			throw new DataException(e);
+		} finally {
+			DBUtils.closeConnection(conn);
+		}
+		}
+
+	
+	
+public void testCreate() throws Exception {
+		
+		Conductor u = new Conductor();
+		u.setUser_id(67L);
+		u.setDni("34290427A");
+		u.setResidencia("Lugo");
+		u.setIdioma_principal("Español");
+		try {
+			ConductorService.create(u);
+		} catch (DataException e) {
+			e.printStackTrace();
+		}
+		System.out.println(u);
+	}
+
+public void testLogin() throws DataException {
+	ConductorService.login("gomezmatosdaniel@gmail.com", "1234");
+	
+}
 	
 	public static void main(String args[]) throws Exception {
 		ConductorServiceTest test = new ConductorServiceTest();
-		test.testFindByViajes();
-		test.testFindByBuenaRuta();
-		test.testFindByBuenaConversacion();
-		test.testFindByExcelenteServicio();
+		//test.testFindByViajes();
+		//test.testFindByBuenaRuta();
+		//test.testFindByBuenaConversacion();
+		//test.testFindByExcelenteServicio();
+		//test.testCreate();
+		//test.testLogin();
+		test.testFindByResidencia();
 
 	}
 }

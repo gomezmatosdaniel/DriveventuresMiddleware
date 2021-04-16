@@ -1,8 +1,13 @@
 package com.driveventures.test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import com.driveventures.daos.impl.ConductorDAOImpl;
 import com.driveventures.model.Conductor;
 import com.driveventures.model.Usuario;
+
+import DBCUtils.DataException;
 
 public class ConductorEmailDAOTest {
 
@@ -13,12 +18,13 @@ private ConductorDAOImpl  ConductorDAO= null;
 
 	}
 	
-	public void testfindByEmail() {
+	public void testfindByEmail() throws SQLException, DataException {
 		ConductorDAOImpl ConductorDAO = new ConductorDAOImpl();
+		Connection connection = DBCUtils.GetConnection.getConnection();
 		try {
 		
 			
-			Conductor c = ConductorDAO.findByEmail("gabriel2@gmail.com");
+			Conductor c = ConductorDAO.findByEmail(connection, "gomezmatosdaniel@gmail.com");
 			
 
 			System.out.println("FindByEmail");
@@ -29,7 +35,7 @@ private ConductorDAOImpl  ConductorDAO= null;
 				
 				System.out.println(c.toString());
 			}
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			System.out.println("No se ha encontrado");
 			e.printStackTrace();
 			
@@ -37,7 +43,7 @@ private ConductorDAOImpl  ConductorDAO= null;
 	
 	}
 	
-	public static final void main(String args[]) {
+	public static final void main(String args[]) throws SQLException, DataException {
 		ConductorEmailDAOTest test = new ConductorEmailDAOTest();
 		test.testfindByEmail();
 	}

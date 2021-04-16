@@ -7,6 +7,8 @@ import com.driveventures.daos.impl.CocheDAOImpl;
 import com.driveventures.daos.impl.CocheDTODAOImpl;
 import com.driveventures.model.Coche;
 import com.driveventures.model.CocheDTO;
+import com.driveventures.model.Conductor;
+import com.driveventures.model.Usuario;
 
 import DBCUtils.DataException;
 
@@ -99,22 +101,26 @@ public void testFindId() {
 	
 	public void testCreate() throws DataException {
 		Coche c = new Coche();
+		Usuario u = new Usuario();
+		Conductor conductor = new Conductor();
 		c.setNombreModelo("Mercedes");
 		c.setFechaMatriculacion(2020);
 		c.setPlazas(5);
 		c.setMatricula("3007 SCH");
 		c.setIdModelo(7L);
+		c.setId(9);
+		u.setId(67L);
 
 		c = cocheDAO.add(c);
-		System.out.println("Cuidador "+ c.getId()+ " creado");
+		System.out.println("Coche"+ c.getId()+ " creado");
 	}
 	
 	public static final void main(String args[]) throws DataException {
 		CocheDAOTest test = new CocheDAOTest();
-		test.testFindId();
-		test.testFindByAnho();
-		test.testFindByMarca();
-		test.testFindByPlazas();
+		//test.testFindId();
+		//test.testFindByAnho();
+		//test.testFindByMarca();
+		//test.testFindByPlazas();
 		test.testCreate();
 	}
 }
