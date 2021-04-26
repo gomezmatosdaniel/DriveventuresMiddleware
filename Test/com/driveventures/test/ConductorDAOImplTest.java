@@ -19,11 +19,11 @@ public class ConductorDAOImplTest {
 
 	private static Logger logger = LogManager.getLogger(ConductorDAOImplTest.class);
 
-	private ConductorDAOImpl ConductorDAO= null;
+	private ConductorDAOImpl conductorDAO= null;
 	private ConductorService conductorService = null;
 
 	public ConductorDAOImplTest() {
-		ConductorDAO = new ConductorDAOImpl();
+		conductorDAO = new ConductorDAOImpl();
 		conductorService = new ConductorServiceImpl();
 
 	}

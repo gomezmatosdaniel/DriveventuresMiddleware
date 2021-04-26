@@ -12,7 +12,7 @@ public interface UsuarioDAO {
 
 	public Usuario findByEmail(Connection connection, String email) throws DataException;
 
-	public Usuario findById(Connection connection, int id) throws DataException;
+	public Usuario findById(Connection connection, Long id) throws DataException;
 	
 	public Usuario create(Connection connection, Usuario usuario) throws DataException;
 

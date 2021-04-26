@@ -2,9 +2,12 @@ package com.driveventures.daos.impl;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -12,6 +15,7 @@ import org.apache.log4j.Logger;
 import com.driveventures.daos.CocheDTODAO;
 import com.driveventures.model.Coche;
 import com.driveventures.model.CocheDTO;
+import com.driveventures.model.Conductor;
 
 import DBCUtils.DBUtils;
 import DBCUtils.DataException;
@@ -21,7 +25,7 @@ public class CocheDTODAOImpl implements CocheDTODAO {
 	private static Logger logger = LogManager.getLogger(CocheDTODAOImpl.class);
 
 	
-	public CocheDTO FindById(int id) throws DataException {
+	public CocheDTO FindById(Connection connection, Long id) throws DataException {
 		CocheDTO result= null;
 		Connection conn = null;
 	    Statement stmt = null;
@@ -44,7 +48,7 @@ public class CocheDTODAOImpl implements CocheDTODAO {
 	      ResultSet rsl = stmt.executeQuery(sql);
 
 	      if (rsl.next()) {			
-				result = loadNext(rsl);			
+				result = loadNext(conn, rsl);			
 			}
 	      rsl.close();
 			stmt.close();
@@ -65,19 +69,17 @@ public class CocheDTODAOImpl implements CocheDTODAO {
 
 
 	@Override
-	public Coche findByPlazas(int plazas) throws DataException {
-		Coche result = null;
+	public List<Coche> findByPlazas(Connection connection, int plazas) throws DataException, SQLException {
+		List<Coche> result = null;
 		Connection conn = null;
-		Statement stmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		{ 
 
 			try {
 
 				conn = DBCUtils.GetConnection.getConnection();
 
 				logger.debug("Creating statement...");
-				stmt = conn.createStatement();
 				String sql;
 				sql = " SELECT c.id , c.nombre , c.anho_creacion ,c.plazas, c.matricula, mo.modelo, m.marca "
 						+" FROM coche c "
@@ -93,42 +95,40 @@ public class CocheDTODAOImpl implements CocheDTODAO {
 					sql += " WHERE c.plazas < 5 ";
 				}
 
-				ResultSet rsl = stmt.executeQuery(sql);
-				if (rsl.next()) {			
-					result = loadNext(rsl);			
-				}
-				rsl.close();
-				stmt.close();
-				conn.close();
-			} catch (SQLException se) {
-				logger.error(se);
-			} catch (Exception e) {
-				logger.error(e);
-			} finally {
+				   stmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
+				      rs = stmt.executeQuery();
+				      
+				      List<Coche> results = new ArrayList<Coche>();                        
+						Coche c = null;
+						
+						while(rs.next()) {
+							c = loadNext(conn, rs);
+							results.add(c);               	
+						}
+						return results;
 
-				DBUtils.closeConnection(conn);
-				DBUtils.closeResultSet(rs);
-				DBUtils.closeStatement(stmt);
-			}
-
-
-			return result;		
-		}
+					} catch (SQLException ex) {
+						logger.warn(ex.getMessage(), ex);
+						throw new DataException(ex);
+					} finally {            
+						DBUtils.closeResultSet(rs);
+						DBUtils.closeStatement(stmt);
+					}
 	}
 
 	@Override
-	public Coche findByAño(int fechamatriculacion) throws DataException {
+	public List<Coche> findByAño(Connection connection, int fechamatriculacion) throws DataException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Coche findByMarca(int idmarca) throws DataException {
-		Coche result = null;
+	public List<Coche> findByMarca(Connection connection, int idmarca) throws DataException {
+		List<Coche> result = null;
 		Connection conn = null;
-		  Statement stmt = null;
-		  ResultSet rs = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
 		  { 
 		
 		try {
@@ -136,7 +136,7 @@ public class CocheDTODAOImpl implements CocheDTODAO {
 			conn = DBCUtils.GetConnection.getConnection();
 			
 		    logger.debug("Creating statement...");
-		    stmt = conn.createStatement();
+		
 		    String sql;
 		    sql = "SELECT c.id , c.nombre , c.anho_creacion ,c.plazas, c.matricula, mo.modelo, m.marca "
 		    		+" FROM coche c "
@@ -146,31 +146,33 @@ public class CocheDTODAOImpl implements CocheDTODAO {
 		      		+" ON mo.marca_id = m.id "
 		      		+" WHERE m.id = " +idmarca;
 
-		    ResultSet rsl = stmt.executeQuery(sql);
-		    if (rsl.next()) {			
-				result = loadNext(rsl);			
+		    stmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+		      rs = stmt.executeQuery();
+		      
+		      List<Coche> results = new ArrayList<Coche>();                        
+				Coche c = null;
+				
+				while(rs.next()) {
+					c = loadNext(conn, rs);
+					results.add(c);               	
+				}
+				return results;
+
+			} catch (SQLException ex) {
+				logger.warn(ex.getMessage(), ex);
+				throw new DataException(ex);
+			} finally {            
+				DBUtils.closeResultSet(rs);
+				DBUtils.closeStatement(stmt);
 			}
-	      rsl.close();
-			stmt.close();
-			conn.close();
-		} catch (SQLException se) {
-			logger.error(se);
-		} catch (Exception e) {
-			logger.error(e);
-		} finally {
-			
-			DBUtils.closeConnection(conn);
-			DBUtils.closeResultSet(rs);
-			DBUtils.closeStatement(stmt);
-		}
-		return result;	
 		  }
-	}
+		  }
 
 
 
 	@Override
-	public Coche add(Coche coche) {
+	public Coche add(Connection connection, Coche coche) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -178,7 +180,7 @@ public class CocheDTODAOImpl implements CocheDTODAO {
 
 
 	@Override
-	public void update(Coche coche) {
+	public void update(Connection connection, Coche coche) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -186,12 +188,13 @@ public class CocheDTODAOImpl implements CocheDTODAO {
 
 
 	@Override
-	public void delete(int id) {
+	public long delete(Connection connection, Long id) {
+		return id;
 		// TODO Auto-generated method stub
 		
 	}
 	
-	private CocheDTO loadNext(ResultSet rs) throws Exception {
+	private CocheDTO loadNext(Connection conn, ResultSet rs) throws DataException, SQLException {
 		CocheDTO c = new CocheDTO();		
 		int i = 1;
 		c.setId(rs.getInt(i++));		
@@ -202,6 +205,30 @@ public class CocheDTODAOImpl implements CocheDTODAO {
 		c.setNombreModelo(rs.getString(i++));
 		c.setNombreMarca(rs.getString(i++));
 		return c;
+	}
+
+
+
+	@Override
+	public Coche findByPlazas(int plazas) throws DataException, SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public Coche findByAño(int fechamatriculacion) throws DataException, SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public Coche findByMarca(int idmarca) throws DataException, SQLException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class Coche  {
 
 	public int id;
-	private int idConductor;
+	private Long idConductor;
 	public int fechaMatriculacion;
 	public int plazas;
 	public String nombre;
@@ -21,9 +21,24 @@ public class Coche  {
 
 	}
 
+	
+
+
+	
+
+
+
+
 	public int getId() {
 		return id;
 	}
+
+
+
+
+
+
+
 
 
 	public void setId(int id) {
@@ -31,15 +46,16 @@ public class Coche  {
 	}
 
 
-	public int getIdConductor() {
-		return idConductor;
-	}
 
 
-	public void setIdConductor(int idConductor) {
+
+
+
+
+
+	public void setIdConductor(Long idConductor) {
 		this.idConductor = idConductor;
 	}
-
 
 
 	public int getPlazas() {
@@ -58,6 +74,10 @@ public class Coche  {
 
 	public String getNombre() {
 		return nombre;
+	}
+
+	public Long getIdConductor() {
+		return idConductor;
 	}
 
 	public void setNombre(String nombre) {

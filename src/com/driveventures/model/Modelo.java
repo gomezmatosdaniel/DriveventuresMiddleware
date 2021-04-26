@@ -1,10 +1,14 @@
 package com.driveventures.model;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public class Modelo {
 
 	public int id;
-	public static String modelo;
+	public String nombreModelo;
 	public int idCoche;
+	public int marcaid;
 
 
 
@@ -32,20 +36,38 @@ public class Modelo {
 
 
 
-	public static String getModelo() {
-		return modelo;
+
+	public String getNombreModelo() {
+		return nombreModelo;
 	}
 
 
 
-	public void setModelo(String modelo) {
-		this.modelo = modelo;
+	public void setNombreModelo(String nombreModelo) {
+		this.nombreModelo = nombreModelo;
 	}
 
 
 
 	public void setIdCoche(int idCoche) {
 		this.idCoche = idCoche;
+	}
+
+
+
+	public int getMarcaid() {
+		return marcaid;
+	}
+
+
+
+	public void setMarcaid(int marcaid) {
+		this.marcaid = marcaid;
+	}
+	
+public String toString() {
+		
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 

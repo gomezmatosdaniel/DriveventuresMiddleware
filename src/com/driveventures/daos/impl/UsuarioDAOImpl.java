@@ -66,7 +66,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 		}
 	}
 
-	public Usuario findById(Connection connection, int id) throws DataException {
+	public Usuario findById(Connection connection, Long id) throws DataException {
 		
 		Usuario u = null;
 		PreparedStatement preparedStatement = null;
@@ -74,14 +74,14 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 		try {
 			String sql;
 			
-			sql = "SELECT nombre , email, apellido "
+			sql = "SELECT id, email, nombre , apellido, password "
 					+" FROM usuario"
 					+" WHERE id = ? ";
 			
 			preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			
 			int i = 1;
-			preparedStatement.setInt(i++, id);
+			preparedStatement.setLong(i++, id);
 
 			resultSet = preparedStatement.executeQuery();					
 
@@ -168,13 +168,13 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
 			boolean first = true;
 
-			if (u.getEmail()!=null) {
-				addUpdate(queryString, first, " EMAIL = ? ");
+			if (u.getNombre()!=null) {
+				addUpdate(queryString, first, " NOMBRE = ? ");
 				first = false;
 			}
 			
-			if (u.getNombre()!=null) {
-				addUpdate(queryString, first, " NOMBRE = ? ");
+			if (u.getEmail()!=null) {
+				addUpdate(queryString, first, " EMAIL = ? ");
 				first = false;
 			}
 			
@@ -188,19 +188,16 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 				first = false;
 			}
 			
-			
-			
-			
-				queryString.append(" WHERE ID= ? ");
+				queryString.append(" WHERE ID = ? ");
 
 			preparedStatement = connection.prepareStatement(queryString.toString());
 
 			int i = 1;     		
-			if(u.getEmail()!=null)
-					preparedStatement.setString(i++, u.getEmail());
-			
 			if(u.getNombre()!=null)
 					preparedStatement.setString(i++, u.getNombre());
+			
+			if(u.getEmail()!=null)
+					preparedStatement.setString(i++, u.getEmail());
 			
 			if(u.getApellidos()!=null)
 					preparedStatement.setString(i++, u.getApellidos());

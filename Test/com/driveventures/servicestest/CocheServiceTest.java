@@ -1,11 +1,12 @@
 package com.driveventures.servicestest;
 
 import java.sql.SQLException;
-
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import com.driveventures.model.Coche;
+import com.driveventures.model.Conductor;
 import com.driveventures.service.CocheService;
 import com.driveventures.service.Impl.CocheServiceImpl;
 
@@ -32,7 +33,7 @@ class CocheServiceTest {
 
 		try {
 
-			Coche c = CocheService.findById(2);			
+			Coche c = CocheService.findById(67L);			
 			logger.debug(c.toString());
 
 		} catch (DataException t) {
@@ -49,7 +50,7 @@ class CocheServiceTest {
 
 		try {
 
-			Coche c = CocheService.findByMarca(2);			
+			List<Coche> c = CocheService.findByMarca(2);			
 			logger.debug(c.toString());
 
 		} catch (DataException t) {
@@ -65,7 +66,7 @@ class CocheServiceTest {
 
 		try {
 
-			Coche c = CocheService.findByPlazas(5);			
+			List<Coche> c = CocheService.findByPlazas(5);			
 			logger.debug(c.toString());
 
 		} catch (DataException t) {
@@ -82,7 +83,7 @@ class CocheServiceTest {
 
 		try {
 
-			Coche c = CocheService.findByAño(2001);			
+			List<Coche> c = CocheService.findByAño(2001);			
 			logger.debug(c.toString());
 
 		} catch (DataException t) {
@@ -97,21 +98,38 @@ class CocheServiceTest {
 		
 		logger.info("Testing Add");
 
+Coche c = new Coche();
 		
-			Coche c = new Coche();
-			
 
+		c.setNombre("Mercedes");
+		c.setFechaMatriculacion(2020);
+		c.setPlazas(5);
+		c.setMatricula("3007 SCH");
+		c.setIdModelo(7L);
+		c.setIdConductor(67L);
 
-			
+		CocheService.registrar(c);
+		logger.info(c+"creado");
 	}
+	
+	protected void testDelete() throws DataException, SQLException {
+		
+		logger.info("Testing Delete");
+		
+		long id = 67;
+		id = CocheService.delete(id);
+		System.out.println("Se borró el coche con id de usuario: "+id);
+	}
+
 
 	public static void main(String args[]) throws DataException, SQLException {
 		CocheServiceTest test = new CocheServiceTest();
-		test.testFindById();
-		test.testFindByMarca();
-		test.testFindByPlazas();
-		test.testFindByAño();
-
+		//test.testFindById();
+		//test.testFindByMarca();
+		//test.testFindByPlazas();
+		//test.testFindByAño();
+		//test.testAdd();
+		test.testDelete();
 	}
 
 }

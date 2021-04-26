@@ -21,11 +21,12 @@ public class UsuarioServiceTest {
 		usuarioService = new UsuarioServiceImpl();
 	}
 	
-	/**public void testFindById() throws DataException {
-		usuarioService.findById(1);
-	} **/
+	public void testFindById() throws DataException {
+		usuarioService.findById(1L);
+		
+	} 
 	
-	/** public void testCreate() throws DataException , MailException, EmailException {
+	public void testCreate() throws DataException , MailException, EmailException {
 		
 		Usuario u = new Usuario();
 		u.setEmail("gomezmatossssdgdaniel@gmail.com");
@@ -40,42 +41,42 @@ public class UsuarioServiceTest {
 			e.printStackTrace();
 		}
 		System.out.println(u);
-	} **/
+	} 
 	
 	public void testLogin() throws DataException {
 		usuarioService.login("gomezmatosdaniel@gmail.com", "123");
 		
 	}
 	
-	/**public void testUpdate() throws DataException {
+	public void testUpdate() throws DataException {
 		
 		Usuario u = new Usuario();
-		u.setId(5l);
-		u.setEmail("jaime21@hotmail.com");
-		u.setNombre("Jaime");
-		u.setApellidos("Hernandez Hernandez");
-		u.setPassword("aloo");
+		u.setId(67l);
+		u.setNombre("Daniel");
+		u.setEmail("gomezmatosdaniel@gmail.com");
+		u.setApellidos("Gómez Matos");
+		u.setPassword("123");
 		
 		usuarioService.update(u);
-	} **/
+	} 
 	
 	public void testDelete()
-			throws Exception{
+			throws DataException{
 		
 		long id = 44;
 		id = usuarioService.delete(id);
-		System.out.println("Se elimino el usuario con id "+id);
+		System.out.println("Se borró el usuario con id "+id);
 
 	}
 	
 	public static final void main(String args[]) throws DataException {
 		UsuarioServiceTest test = new UsuarioServiceTest();
 		try {
-		test.testLogin();
-		//test.testUpdate();
+		//test.testLogin();
+		test.testUpdate();
 		//test.testCreate();
 		//test.testFindById();
-		test.testDelete();
+		//test.testDelete();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

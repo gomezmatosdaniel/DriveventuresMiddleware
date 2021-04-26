@@ -22,6 +22,29 @@ private UsuarioDAOImpl  UsuarioDAO= null;
 
 	}
 	
+	public void testFindById() throws SQLException {
+		UsuarioDAOImpl UsuarioDAO = new UsuarioDAOImpl();
+	
+		try {
+		
+			Connection connection = DBCUtils.GetConnection.getConnection();
+			Usuario u = UsuarioDAO.findById(connection, 1L);
+					
+         System.out.println("FindByEmail");
+			
+			if (u==null) {
+				System.out.println("No encontrado");
+			} else {
+				
+				System.out.println(u.toString());
+			}
+		} catch (Exception e) {
+			System.out.println("No se ha encontrado");
+			e.printStackTrace();
+			
+		}
+	}
+	
 	public void testfindByEmail() {
 		UsuarioDAOImpl UsuarioDAO = new UsuarioDAOImpl();
 		try {
@@ -55,9 +78,10 @@ private UsuarioDAOImpl  UsuarioDAO= null;
 
 		}
 	
-	public static final void main(String args[]) throws DataException {
+	public static final void main(String args[]) throws DataException, SQLException {
 		UsuarioDAOTest test = new UsuarioDAOTest();
-		test.testfindByEmail();
+		//test.testfindByEmail();
+		test.testFindById();
 	}
 	
 }

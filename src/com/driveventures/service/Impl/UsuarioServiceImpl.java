@@ -151,7 +151,7 @@ public void update(Usuario u) throws DataException {
 
 
 
-public Usuario findById(int id) throws DataException {
+public Usuario findById(Long id) throws DataException {
 	
 	Connection c = null;
 	

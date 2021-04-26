@@ -12,13 +12,11 @@ public class GetConnection {
 	
 	private static Logger logger = LogManager.getLogger(GetConnection.class);
 	
-	private static ResourceBundle serviceConfiguration = ResourceBundle.getBundle("ServiceConfiguration");
+	static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
+	static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/driveventures";
 
-	static final String JDBC_DRIVER = "jdbc.driver.classname";
-	static final String DB_URL = "jdbc.url";
-
-	static final String USER = "jdbc.user";
-	static final String PASS = "jdbc.password";
+	static final String USER = "driveventures";
+	static final String PASS = "Driveventures123";
 
 	static {
 		try {

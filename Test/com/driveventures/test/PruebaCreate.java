@@ -1,5 +1,7 @@
 package com.driveventures.test;
 
+import java.sql.Connection;
+
 import com.driveventures.daos.impl.CocheDAOImpl;
 import com.driveventures.model.Coche;
 
@@ -15,7 +17,7 @@ private CocheDAOImpl cocheDAO = null;
 	}
 	
 	public void testCreate() throws Exception {
-		
+		Connection connection = DBCUtils.GetConnection.getConnection();
 		System.out.println("Testing create ...");
 		Coche c = new Coche();
 		c.setNombre("Audi");
@@ -24,7 +26,7 @@ private CocheDAOImpl cocheDAO = null;
 		c.setMatricula("7597 YAV");
 		c.setIdModelo(2L);
 
-		c = cocheDAO.add(c);
+		c = cocheDAO.add(connection, c);
 		System.out.println("Cuidador "+ c.getId()+ " creado");
 	}
 	
