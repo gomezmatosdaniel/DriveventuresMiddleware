@@ -94,7 +94,7 @@ class ConductorServiceTest {
 		logger.info("Test testFindByBuenaConversacion finished.\n");		
 	}
 	
-	public Results<Conductor> findByExcelenteServicio(int excelenteservicio, int startIndex, int count) throws DataException, SQLException {
+	public List<Conductor> findByExcelenteServicio(int excelenteservicio) throws DataException, SQLException {
 		
 		Connection conn = null;
 		
@@ -102,7 +102,7 @@ class ConductorServiceTest {
 			
 			conn = GetConnection.getConnection();
 			
-			return conductorDAO.findByExcelenteServicio(conn, excelenteservicio, startIndex, count);
+			return conductorDAO.findByExcelenteServicio(conn, excelenteservicio);
 			
 		} catch (SQLException e) {
 			throw new DataException(e);
@@ -116,7 +116,7 @@ class ConductorServiceTest {
 public void testCreate() throws Exception {
 		
 		Conductor u = new Conductor();
-		u.setUser_id(67L);
+		u.setUser_id(97L);
 		u.setDni("34290427A");
 		u.setResidencia("Lugo");
 		u.setIdioma_principal("Español");
@@ -139,9 +139,9 @@ public void testLogin() throws DataException {
 		//test.testFindByBuenaRuta();
 		//test.testFindByBuenaConversacion();
 		//test.testFindByExcelenteServicio();
-		//test.testCreate();
+		test.testCreate();
 		//test.testLogin();
-		test.testFindByResidencia();
+		//test.testFindByResidencia();
 
 	}
 }

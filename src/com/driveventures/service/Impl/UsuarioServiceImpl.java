@@ -9,7 +9,11 @@ import org.apache.commons.mail.EmailException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.driveventures.daos.CocheDAO;
+import com.driveventures.daos.ConductorDAO;
 import com.driveventures.daos.UsuarioDAO;
+import com.driveventures.daos.impl.CocheDAOImpl;
+import com.driveventures.daos.impl.ConductorDAOImpl;
 import com.driveventures.daos.impl.UsuarioDAOImpl;
 import com.driveventures.model.Usuario;
 import com.driveventures.service.MailService;
@@ -28,9 +32,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 	
 	private static Logger logger = LogManager.getLogger(UsuarioServiceImpl.class);
 	private UsuarioDAO usuarioDAO = null;
-	
+	private ConductorDAO conductorDAO = null;
+	private CocheDAO cocheDAO = null;
 	public UsuarioServiceImpl() {
 		usuarioDAO = new UsuarioDAOImpl();
+		conductorDAO = new ConductorDAOImpl();
+		cocheDAO = new CocheDAOImpl();
 	}
 	
 	
@@ -175,7 +182,7 @@ public Usuario findById(Long id) throws DataException {
 
 
 @Override
-public long delete(Long id) throws DataException {
+public long delete(Long id) throws Exception {
 	Connection connection = null;
     boolean commit = false;
     Long result = null;
@@ -189,7 +196,9 @@ public long delete(Long id) throws DataException {
 
         connection.setAutoCommit(false);
         
-        result = usuarioDAO.delete(connection, id);   
+        result = cocheDAO.delete(connection, id);
+        		conductorDAO.delete(connection, id); 
+        usuarioDAO.delete(connection, id);   
         
         commit = true;            
         return result;

@@ -61,9 +61,9 @@ public class UsuarioServiceTest {
 	} 
 	
 	public void testDelete()
-			throws DataException{
+			throws Exception{
 		
-		long id = 44;
+		long id = 67;
 		id = usuarioService.delete(id);
 		System.out.println("Se borró el usuario con id "+id);
 
@@ -73,10 +73,10 @@ public class UsuarioServiceTest {
 		UsuarioServiceTest test = new UsuarioServiceTest();
 		try {
 		//test.testLogin();
-		test.testUpdate();
+		//test.testUpdate();
 		//test.testCreate();
 		//test.testFindById();
-		//test.testDelete();
+		test.testDelete();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

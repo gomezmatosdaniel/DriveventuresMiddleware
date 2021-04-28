@@ -2,7 +2,6 @@ package com.driveventures.service.Impl;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,15 +9,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.driveventures.daos.ConductorDAO;
+import com.driveventures.daos.UsuarioDAO;
 import com.driveventures.daos.impl.ConductorDAOImpl;
+import com.driveventures.daos.impl.UsuarioDAOImpl;
 import com.driveventures.model.Conductor;
-import com.driveventures.model.Usuario;
 import com.driveventures.service.ConductorService;
 import com.driveventures.service.MailService;
-import com.driveventures.service.Results;
-import com.driveventures.velocity.MailEngineBuilder;
-import com.driveventures.velocity.MapNames;
-import com.driveventures.velocity.TemplatesURLs;
 
 import DBCUtils.DBUtils;
 import DBCUtils.DataException;
@@ -30,9 +26,11 @@ public class ConductorServiceImpl implements ConductorService {
 	private static Logger logger = LogManager.getLogger(ConductorServiceImpl.class);
 	
 	public ConductorDAO conductorDAO = null;
+	public UsuarioDAO usuarioDAO = null;
 
 	public ConductorServiceImpl() {
 		conductorDAO = new ConductorDAOImpl();
+		usuarioDAO = new UsuarioDAOImpl();
 	}
 
 
@@ -91,7 +89,7 @@ public List<Conductor> findByBuenaRuta(int buenaruta) throws DataException, SQLE
 
 
 
-public Results<Conductor> findByExcelenteServicio(int excelenteservicio, int startIndex, int count) throws DataException, SQLException {
+public List<Conductor> findByExcelenteServicio(int excelenteservicio) throws DataException, SQLException {
 	
 	Connection conn = null;
 	
@@ -99,7 +97,7 @@ public Results<Conductor> findByExcelenteServicio(int excelenteservicio, int sta
 		
 		conn = GetConnection.getConnection();
 		
-		return conductorDAO.findByExcelenteServicio(conn, excelenteservicio, startIndex, count);
+		return conductorDAO.findByExcelenteServicio(conn, excelenteservicio);
 		
 	} catch (SQLException e) {
 		throw new DataException(e);
@@ -221,6 +219,36 @@ public List<Conductor> findByAñosExp(int anhos_experiencia) throws DataException
 	} finally {
 		DBUtils.closeConnection(conn);
 	}
+}
+
+
+@Override
+public long delete(Long id) throws DataException, Exception {
+	Connection connection = null;
+    boolean commit = false;
+    Long result = null;
+
+    try {
+      
+        connection = GetConnection.getConnection();
+
+        connection.setTransactionIsolation(
+                Connection.TRANSACTION_READ_COMMITTED);
+
+        connection.setAutoCommit(false);
+        
+        result = conductorDAO.delete(connection, id);  
+        
+        commit = true;            
+        return result;
+        
+    } catch (SQLException e) {
+    	logger.warn(e.getMessage(), e);
+        throw new DataException(e);
+
+    } finally {
+    	DBUtils.closeConnection(connection, commit);
+    }	
 }
 
 	

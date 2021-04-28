@@ -254,7 +254,7 @@ public class ConductorDAOImpl implements ConductorDAO {
 	}
 
 	@Override
-	public Results<Conductor> findByExcelenteServicio(Connection connection, int excelenteservicio, int startIndex, int count) throws DataException, SQLException {
+	public List<Conductor> findByExcelenteServicio(Connection connection, int excelenteservicio) throws DataException, SQLException {
 		List<Conductor> co = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet rs = null;
@@ -279,34 +279,22 @@ public class ConductorDAOImpl implements ConductorDAO {
 	      preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 	      rs = preparedStatement.executeQuery();
 	      
-	      List<Conductor> page = new ArrayList<Conductor>();
+	      List<Conductor> results = new ArrayList<Conductor>();                        
 			Conductor c = null;
-			int currentCount = 0;
-
-			if ((startIndex >=1) && rs.absolute(startIndex)) {
-				do {
-					c = loadNext(connection, rs); 
-					page.add(c);               	
-					currentCount++;                	
-				} while ((currentCount < count) && rs.next()) ;
+			
+			while(rs.next()) {
+				c = loadNext(connection, rs);
+				results.add(c);               	
 			}
-			
-			
-			int totalRows = DBUtils.getTotalRows(rs);
-
-			Results<Conductor> results = new Results<Conductor>(page, startIndex, totalRows);
-			
-			
 			return results;
-			
 
-	} catch (SQLException e) {
-		logger.warn(e.getMessage(), e);
-		throw new DataException(e);
-	} finally {
-		DBUtils.closeResultSet(rs);
-		DBUtils.closeStatement(preparedStatement);
-	}
+		} catch (SQLException ex) {
+			logger.warn(ex.getMessage(), ex);
+			throw new DataException(ex);
+		} finally {            
+			DBUtils.closeResultSet(rs);
+			DBUtils.closeStatement(preparedStatement);
+		}
 	}
 
 	@Override
@@ -362,8 +350,8 @@ public class ConductorDAOImpl implements ConductorDAO {
 		ResultSet resultSet = null;
 		try {          
 		
-		String queryString = "INSERT INTO CONDUCTOR (USER_ID, VIAJES, AÑOS_EXPERIENCIA, DNI, RESIDENCIA, BUENA_CONVERSACION, BUENA_RUTA, EXCELENTE_SERVICIO, COCHE_ID, IDIOMA_PRINCIPAL)"
-		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String queryString = "INSERT INTO CONDUCTOR (USER_ID, VIAJES, ANHOS_EXPERIENCIA, DNI, RESIDENCIA, BUENA_CONVERSACION, BUENA_RUTA, EXCELENTE_SERVICIO, IDIOMA_PRINCIPAL)"
+		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		preparedStatement = connection.prepareStatement(queryString, Statement.RETURN_GENERATED_KEYS);
 
@@ -376,7 +364,6 @@ public class ConductorDAOImpl implements ConductorDAO {
 		preparedStatement.setInt(i++, conductor.getBuenaconversacion());
 		preparedStatement.setInt(i++, conductor.getBuenaruta());
 		preparedStatement.setInt(i++, conductor.getExcelenteserviscio());
-		preparedStatement.setInt(i++, conductor.getCoche_id());
 		preparedStatement.setString(i++, conductor.getIdioma_principal());
 		int insertedRows = preparedStatement.executeUpdate();
 
@@ -409,12 +396,6 @@ public class ConductorDAOImpl implements ConductorDAO {
 	public void update(Conductor conductor) throws Exception {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public boolean delete(int id) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	private Conductor loadNext(Connection connection, ResultSet rs) throws DataException, SQLException {
@@ -527,6 +508,38 @@ public class ConductorDAOImpl implements ConductorDAO {
 						DBUtils.closeResultSet(rs);
 						DBUtils.closeStatement(preparedStatement);
 					}
+	}
+
+
+	public long delete(Connection connection, Long id) throws Exception {
+		
+		PreparedStatement preparedStatement = null;
+
+		try {
+			
+
+			String queryString =	
+					"DELETE FROM CONDUCTOR " 
+							+ "WHERE USER_ID = ? ";
+
+
+			preparedStatement = connection.prepareStatement(queryString);
+
+			int i = 1;
+			preparedStatement.setLong(i++, id);
+
+			long removedRows = preparedStatement.executeUpdate();
+
+			return removedRows;
+
+		} catch (SQLException e) {
+			logger.warn(e.getMessage(), e);
+			throw new DataException(e);
+		} finally {
+			DBUtils.closeStatement(preparedStatement);
+		}
+
+
 	}
 }
 	

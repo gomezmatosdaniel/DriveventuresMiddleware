@@ -13,6 +13,7 @@ import com.driveventures.service.ConductorService;
 import com.driveventures.service.Results;
 import com.driveventures.service.Impl.ConductorServiceImpl;
 
+import DBCUtils.DataException;
 import DBCUtils.ToStringUtils;
 
 public class ConductorDAOImplTest {
@@ -91,31 +92,19 @@ public class ConductorDAOImplTest {
 		}
 	}
 	
-	public void testFindByExcelenteServicio() {
+	public void testFindByExcelenteServicio() throws SQLException {
 		ConductorDAOImpl ConductorDAO = new ConductorDAOImpl();
-		int PAGE_SIZE = 4;
+		
 
 		try {
 
-			Results<Conductor> results = null;
-			int startIndex = 1; 
-			int i = 1;
-			do {
-				results = conductorService.findByExcelenteServicio(20, startIndex, PAGE_SIZE);
+			List<Conductor> results = null;
+		
+				results = conductorService.findByExcelenteServicio(20);
 						
-				if (results.getPage().size()>0) {
-					logger.info("Page ["+startIndex+" - "+(startIndex+results.getPage().size()-1)+"] : ");				
-					for (Conductor c: results.getPage()) {
-						logger.info("Result "+i+": "+ToStringUtils.toString(c));
-						i++;
-					}
-					startIndex = startIndex + PAGE_SIZE;
-				}
-
-			} while (!(results.getPage().size()<PAGE_SIZE)); 		
-
-		} catch (Throwable t) {
-			logger.error(t.getMessage(), t);
+				
+		} catch (DataException de) {
+			logger.error(de.getMessage(), de);
 		}
 		logger.info("Test testFindByExcelenteServicio finished.\n");
 	}

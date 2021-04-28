@@ -33,7 +33,7 @@ class CocheServiceTest {
 
 		try {
 
-			Coche c = CocheService.findById(67L);			
+			Coche c = CocheService.findById(2L);			
 			logger.debug(c.toString());
 
 		} catch (DataException t) {
@@ -124,12 +124,12 @@ Coche c = new Coche();
 
 	public static void main(String args[]) throws DataException, SQLException {
 		CocheServiceTest test = new CocheServiceTest();
-		//test.testFindById();
+		test.testFindById();
 		//test.testFindByMarca();
 		//test.testFindByPlazas();
 		//test.testFindByAño();
 		//test.testAdd();
-		test.testDelete();
+		//test.testDelete();
 	}
 
 }

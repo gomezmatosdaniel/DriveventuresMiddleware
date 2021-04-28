@@ -19,10 +19,12 @@ public interface ConductorService {
 	
 	public List<Conductor> findByAñosExp(int anhos_experiencia) throws DataException, SQLException;
 	
-	public Results<Conductor> findByExcelenteServicio(int excelenteservicio, int startIndex, int count) throws DataException, SQLException;
+	public List<Conductor> findByExcelenteServicio(int excelenteservicio) throws DataException, SQLException;
 
 	public List<Conductor> findByResidencia (String Residencia) throws DataException, SQLException;
 	
 	public Conductor create(Conductor co) throws DataException, Exception;
+	
+	public long delete(Long id) throws DataException, Exception;
 	
 }

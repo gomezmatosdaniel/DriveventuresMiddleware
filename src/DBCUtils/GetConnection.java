@@ -8,20 +8,41 @@ import java.util.ResourceBundle;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+
 public class GetConnection {
 	
 	private static Logger logger = LogManager.getLogger(GetConnection.class);
 	
-	static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/driveventures";
-
-	static final String USER = "driveventures";
-	static final String PASS = "Driveventures123";
-
+	private static ResourceBundle DBConfiguration = ResourceBundle.getBundle("DBConfiguration");
+	
+	private static final String DRIVER_CLASS_NAME_PARAMETER = "jdbc.driver.classname";
+	private static final String URL_PARAMETER = "jdbc.url";
+	private static final String USER_PARAMETER = "jdbc.user";
+	private static final String PASSWORD_PARAMETER = "jdbc.password";
+	
+	private static String url;
+	private static String user;
+	private static String password;
+	
+	private static ComboPooledDataSource dataSource = null;
+	
+	
 	static {
 		try {
 
-			Class.forName(JDBC_DRIVER);
+			String driverClassName = DBConfiguration.getString(DRIVER_CLASS_NAME_PARAMETER);
+			url = DBConfiguration.getString(URL_PARAMETER);
+			user = DBConfiguration.getString(USER_PARAMETER);
+			password = DBConfiguration.getString(PASSWORD_PARAMETER);
+			
+			dataSource = new ComboPooledDataSource();
+			dataSource.setDriverClass(driverClassName); //loads the jdbc driver            
+			dataSource.setJdbcUrl(url);
+			dataSource.setUser(user);                                  
+			dataSource.setPassword(password);  
+			
+			
 		} catch (Exception e) {
 			logger.error(e);
 		}
@@ -30,7 +51,7 @@ public class GetConnection {
 	public static final Connection getConnection()
 			throws SQLException {		
 
-		return DriverManager.getConnection(DB_URL, USER, PASS);
+		return dataSource.getConnection();
 	}
 
 

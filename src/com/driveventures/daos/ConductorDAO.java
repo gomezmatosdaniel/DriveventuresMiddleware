@@ -29,7 +29,7 @@ public Conductor findById(Connection connection, int id) throws DataException, S
 
 	public List <Conductor> findByAñosExp (Connection connection, int anosexp) throws DataException, SQLException;
 	
-	public Results<Conductor> findByExcelenteServicio(Connection connection, int excelenteservicio, int startindex, int count) throws DataException, SQLException;
+	public List<Conductor> findByExcelenteServicio(Connection connection, int excelenteservicio) throws DataException, SQLException;
 	
 	public List <Conductor> findByViajes(Connection connection, int viajes) throws DataException, SQLException;
 	
@@ -39,6 +39,6 @@ public Conductor findById(Connection connection, int id) throws DataException, S
 
 	public void update(Conductor conductor) throws Exception;
 	
-	public boolean delete(int id) throws Exception;
+	public long delete(Connection connection, Long id) throws Exception;
 
 }
