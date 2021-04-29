@@ -55,7 +55,7 @@ public class ConductorDAOImpl implements ConductorDAO {
 		      
 				if (rs.next()) {
 					c =  loadNext(connection, rs);			
-					//System.out.println("Cargado "+u);
+					
 				} 
 
 				return c;
@@ -344,7 +344,7 @@ public class ConductorDAOImpl implements ConductorDAO {
   }
 
 	
-	public Conductor create(Connection connection, Conductor conductor) throws Exception {
+	public Conductor create(Connection connection, Conductor conductor) throws DataException, SQLException {
 		
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -511,7 +511,7 @@ public class ConductorDAOImpl implements ConductorDAO {
 	}
 
 
-	public long delete(Connection connection, Long id) throws Exception {
+	public long delete(Connection connection, Long id) throws DataException {
 		
 		PreparedStatement preparedStatement = null;
 

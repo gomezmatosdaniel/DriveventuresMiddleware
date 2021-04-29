@@ -35,10 +35,10 @@ public Conductor findById(Connection connection, int id) throws DataException, S
 	
 	public List <Conductor> findByResidencia(Connection connection, String Residencia) throws DataException, SQLException;
 
-	public Conductor create(Connection connection, Conductor conductor) throws Exception;
+	public Conductor create(Connection connection, Conductor conductor) throws DataException, SQLException;
 
 	public void update(Conductor conductor) throws Exception;
 	
-	public long delete(Connection connection, Long id) throws Exception;
+	public long delete(Connection connection, Long id) throws DataException;
 
 }

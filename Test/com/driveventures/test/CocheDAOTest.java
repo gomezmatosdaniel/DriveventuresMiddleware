@@ -1,6 +1,8 @@
 package com.driveventures.test;
 
 import java.sql.Connection;
+
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -8,12 +10,11 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.driveventures.daos.impl.CocheDAOImpl;
-import com.driveventures.daos.impl.CocheDTODAOImpl;
-import com.driveventures.daos.impl.UsuarioDAOImpl;
+
+
 import com.driveventures.model.Coche;
-import com.driveventures.model.CocheDTO;
 import com.driveventures.model.Conductor;
-import com.driveventures.model.Usuario;
+
 
 import DBCUtils.DataException;
 import DBCUtils.GetConnection;
@@ -30,10 +31,10 @@ public class CocheDAOTest {
 	}
 	
 public void testFindId() throws SQLException {
-	CocheDTODAOImpl cocheDTODAO = new CocheDTODAOImpl();
+	CocheDAOImpl cocheDTODAO = new CocheDAOImpl();
 	Connection connection = DBCUtils.GetConnection.getConnection();
 		try {
-			CocheDTO c = cocheDTODAO.FindById(connection, 1L);
+			Coche c = cocheDAO.FindById(connection, 1L);
             
 			logger.debug("FindByID");
 			
@@ -68,12 +69,12 @@ public void testFindId() throws SQLException {
 			}
 	}
 	
-	public void testFindByMarca() {
-		CocheDTODAOImpl cocheDTODAO = new CocheDTODAOImpl();
-		
+	public void testFindByMarca() throws SQLException {
+		CocheDAOImpl cocheDTODAO = new CocheDAOImpl();
+		Connection connection = DBCUtils.GetConnection.getConnection();
 		try {
 			
-			Coche c = cocheDTODAO.findByMarca(1);
+			List<Coche> c = cocheDTODAO.findByMarca(connection, 1);
 			
 			logger.debug("FindByMarca");	
 			logger.info(c==null?"No encontrado":c.toString());
@@ -84,13 +85,13 @@ public void testFindId() throws SQLException {
 	}
 	
 	
-	public void testFindByPlazas() {
-		
-		CocheDTODAOImpl cocheDTODAO = new CocheDTODAOImpl();
+	public void testFindByPlazas() throws SQLException {
+		Connection connection = DBCUtils.GetConnection.getConnection();
+		CocheDAOImpl cocheDTODAO = new CocheDAOImpl();
 		
 		try {
 			
-			Coche c = cocheDTODAO.findByPlazas(5);
+			List<Coche> c = cocheDTODAO.findByPlazas(connection, 5);
 
 			logger.debug("FindByPlazas");
 	if(c==null) {
@@ -135,12 +136,12 @@ public void testFindId() throws SQLException {
 	
 	public static final void main(String args[]) throws DataException, SQLException {
 		CocheDAOTest test = new CocheDAOTest();
-		//test.testFindId();
-		//test.testFindByAnho();
-		//test.testFindByMarca();
-		//test.testFindByPlazas();
+		test.testFindId();
+		test.testFindByAnho();
+		test.testFindByMarca();
+		test.testFindByPlazas();
 		test.testCreate();
-		//test.testDelete();
+		test.testDelete();
 	}
 }
 	

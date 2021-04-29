@@ -17,5 +17,5 @@ public interface UsuarioService {
 	
 	public void update(Usuario u) throws DataException;
 	
-	public long delete(Long id) throws DataException, Exception;
+	public long delete(Long id) throws DataException;
 }

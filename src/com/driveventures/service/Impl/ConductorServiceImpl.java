@@ -108,7 +108,7 @@ public List<Conductor> findByExcelenteServicio(int excelenteservicio) throws Dat
 
 
 @Override
-public Conductor create(Conductor co) throws Exception {
+public Conductor create(Conductor co) throws DataException, SQLException {
 	boolean commit = false;
 	Connection c = null;
 	MailService mailService = null;
@@ -223,7 +223,7 @@ public List<Conductor> findByAñosExp(int anhos_experiencia) throws DataException
 
 
 @Override
-public long delete(Long id) throws DataException, Exception {
+public long delete(Long id) throws DataException {
 	Connection connection = null;
     boolean commit = false;
     Long result = null;

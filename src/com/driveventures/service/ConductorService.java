@@ -23,8 +23,8 @@ public interface ConductorService {
 
 	public List<Conductor> findByResidencia (String Residencia) throws DataException, SQLException;
 	
-	public Conductor create(Conductor co) throws DataException, Exception;
+	public Conductor create(Conductor co) throws DataException, SQLException;
 	
-	public long delete(Long id) throws DataException, Exception;
+	public long delete(Long id) throws DataException;
 	
 }

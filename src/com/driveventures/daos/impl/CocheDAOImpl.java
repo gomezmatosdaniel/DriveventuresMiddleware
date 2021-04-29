@@ -230,7 +230,7 @@ public class CocheDAOImpl implements CocheDAO {
 						+ " plazas, matricula, modelo_id, user_id)  "
 						+ " value(? , ? , ?, ? , ?, ?, ?) ";
 
-				System.out.println("sql = "+sql);
+				logger.info("sql = "+sql);
 
 				preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 

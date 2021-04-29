@@ -182,7 +182,7 @@ public Usuario findById(Long id) throws DataException {
 
 
 @Override
-public long delete(Long id) throws Exception {
+public long delete(Long id) throws DataException {
 	Connection connection = null;
     boolean commit = false;
     Long result = null;
